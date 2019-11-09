@@ -91,6 +91,11 @@ caml!(ml_array2(s) {
     let mut a: ocaml::Str = s.into();
     let b = a.data_mut();
     let ba = ocaml::Array1::<u8>::of_slice(b); // Note: `b` is still owned by OCaml since it was passed as a parameter
+});
+
+caml!(ml_array3(_len) {
+    let mut aa = hex::decode("60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4").unwrap();
+    let mut ba = ocaml::Array1::<u8>::of_slice(&mut aa);
     return ba.into();
 });
 

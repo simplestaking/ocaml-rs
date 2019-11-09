@@ -7,3 +7,6 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies.ocaml]
 path = "../"
+
+[dependencies]
+hex = "0.4.0"
