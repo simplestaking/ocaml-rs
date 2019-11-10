@@ -1,7 +1,8 @@
 #[macro_use]
 extern crate ocaml;
-use ocaml::core::memory;
+
 use ocaml::{ToValue, Value};
+use ocaml::core::memory;
 
 caml!(ml_send_int(v){
     caml_local!(l);
@@ -94,9 +95,17 @@ caml!(ml_array2(s) {
 });
 
 caml!(ml_array3(_len) {
-    let mut aa = hex::decode("60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4").unwrap();
-    let mut ba = ocaml::Array1::<u8>::of_slice(&mut aa);
-    return ba.into();
+    // just create Array1 and check
+    let mut bytes: Vec<u8> = hex::decode("60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4").unwrap() as Vec<u8>;
+    let mut ba = ocaml::Array1::<u8>::of_slice(&mut bytes);
+    let data: Vec<u8> = ba.data().to_vec() as Vec<u8>;
+    assert_eq!("60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4", hex::encode(data).as_str());
+
+    // send to ocaml - new deep copy
+    let mut bytes2: Vec<u8> = hex::decode("60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4").unwrap() as Vec<u8>;
+    let mut ba2 = ocaml::Array1::<u8>::of_slice(&mut bytes2);
+    let val2: Value = ba2.into();
+    return val2.deep_clone_to_rust();
 });
 
 caml!(ml_string_test(s){

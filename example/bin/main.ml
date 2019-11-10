@@ -99,7 +99,7 @@ let _ =
     print_endline "---dump--->";
     let ba2_hex = Hex.show @@ Hex.of_cstruct ba2_cstruct in
     Printf.printf "bigarray2 iter - ba2_hex: %s\n" (ba2_hex);
-    assert (string_test ba2_hex = "60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4");
+    assert (ba2_hex = "60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4");
 
     print_endline "string test";
     assert (string_test "wow" = "testing");
