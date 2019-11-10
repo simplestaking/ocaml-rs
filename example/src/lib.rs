@@ -92,20 +92,26 @@ caml!(ml_array2(s) {
     let mut a: ocaml::Str = s.into();
     let b = a.data_mut();
     let ba = ocaml::Array1::<u8>::of_slice(b); // Note: `b` is still owned by OCaml since it was passed as a parameter
+    return ba.into();
 });
 
 caml!(ml_array3(_len) {
-    // just create Array1 and check
+    // just create Array1 and check bytes
     let mut bytes: Vec<u8> = hex::decode("60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4").unwrap() as Vec<u8>;
     let mut ba = ocaml::Array1::<u8>::of_slice(&mut bytes);
     let data: Vec<u8> = ba.data().to_vec() as Vec<u8>;
     assert_eq!("60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4", hex::encode(data).as_str());
 
-    // send to ocaml - new deep copy
+    // create data in rust
     let mut bytes2: Vec<u8> = hex::decode("60ab6d8d2a6b1c7a391f00aa6c1fc887eb53797214616fd2ce1b9342ad4965a4").unwrap() as Vec<u8>;
-    let mut ba2 = ocaml::Array1::<u8>::of_slice(&mut bytes2);
-    let val2: Value = ba2.into();
-    return val2.deep_clone_to_rust();
+
+    // copy to ocaml
+    let mut array: ocaml::Array1<u8> = ocaml::Array1::<u8>::create(bytes2.len());
+    let data_mut = array.data_mut();
+    for (idx, byte) in bytes2.iter().enumerate() {
+        data_mut[idx] = *byte;
+    }
+    return ocaml::Array1::<u8>::of_slice(array.data_mut()).into();
 });
 
 caml!(ml_string_test(s){
